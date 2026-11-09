@@ -1,8 +1,37 @@
 <script setup>
+import { useRouter } from 'vue-router'
 import MapaCidade from './MapaCidade.vue'
 import InformacoesExtras from './InformacoesExtras.vue'
 import { ref } from 'vue'
 import { pesquisarCidades, consultarClima } from '../services/viagens'
+
+
+const router = useRouter()
+
+function planejarViagem(data = null) {
+  const cidade = cidadeSelecionada.value
+
+  if (!cidade) return
+
+  const query = {
+    cidade: cidade.nome,
+    pais: cidade.pais || '',
+    codigo_pais: cidade.codigo_pais || '',
+    latitude: String(cidade.latitude),
+    longitude: String(cidade.longitude),
+    osm_id: cidade.osm_id || '',
+    osm_type: cidade.osm_type || '',
+  }
+
+  if (data) {
+    query.data = data
+  }
+
+  router.push({
+    path: '/viagens',
+    query,
+  })
+}
 
 const busca = ref('')
 const cidades = ref([])
@@ -152,6 +181,15 @@ async function selecionarCidade(cidade) {
         {{ cidadeSelecionada.longitude.toFixed(4) }}
       </p>
 
+
+      <button
+        type="button"
+        class="botao-planejar"
+        @click="planejarViagem()"
+      >
+        Planejar viagem para esta cidade →
+      </button>
+
       <div v-if="clima" class="clima">
         <div class="clima-atual">
           <span class="etiqueta">TEMPO ATUAL</span>
@@ -189,6 +227,15 @@ async function selecionarCidade(cidade) {
               /
               {{ Math.round(clima.daily.temperature_2m_max[index]) }}°
             </span>
+
+            <button
+              type="button"
+              class="botao-data"
+              @click="planejarViagem(data)"
+            >
+              Planejar nesta data
+            </button>
+
           </div>
         </div>
       </div>
@@ -346,4 +393,40 @@ async function selecionarCidade(cidade) {
     padding: 20px;
   }
 }
+
+.botao-planejar {
+  display: block;
+  width: 100%;
+  margin: 20px 0;
+  padding: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.botao-planejar:hover {
+  background: #1d4ed8;
+}
+
+.botao-data {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 9px 5px;
+  border: none;
+  border-radius: 7px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.botao-data:hover {
+  background: #bfdbfe;
+}
+
 </style>
