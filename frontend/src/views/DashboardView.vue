@@ -76,6 +76,14 @@ onMounted(loadUser)
     <header class="topbar">
       <div class="brand">Planejador de Viagens</div>
 
+      
+      <RouterLink
+        to="/viagens"
+        class="botao-viagens"
+      >
+        Minhas viagens
+      </RouterLink>
+
       <button
         class="logout-button"
         :disabled="loggingOut"
@@ -107,3 +115,22 @@ onMounted(loadUser)
     </main>
   </div>
 </template>
+
+
+<style>
+.botao-viagens {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  background: #2563eb;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.botao-viagens:hover {
+  background: #1d4ed8;
+  color: white;
+}
+</style>

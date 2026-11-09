@@ -4,6 +4,7 @@ import { getToken } from '../services/auth'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import DashboardView from '../views/DashboardView.vue'
+import ViagensReactView from '../views/ViagensReactView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -25,6 +26,11 @@ const router = createRouter({
     {
       path: '/dashboard',
       component: DashboardView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/viagens',
+      component: ViagensReactView,
       meta: { requiresAuth: true },
     },
     {
