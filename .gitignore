@@ -1,0 +1,28 @@
+# === Sistema Operacional ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Logs e Ferramentas ===
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# === Ambientes Virtuais e Dependências ===
+node_modules/
+.env
+.env.local
+.env.production
+venv/
+.venv/
+env/
+
+# === IDEs e Editores ===
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
