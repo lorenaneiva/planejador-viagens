@@ -95,12 +95,10 @@ onMounted(loadUser)
 
       <template v-else>
         <div class="welcome">
-          <span class="eyebrow">Seu painel</span>
-
-          <h1>Olá, {{ user.name }}!</h1>
+          <h1>Olá, {{ user.name.split(' ')[0].charAt(0).toUpperCase() + user.name.split(' ')[0].slice(1) }}!</h1>
 
           <p>
-            Sua conta foi autenticada com sucesso pelo Laravel.
+            Descubra seu próximo destino e planeje sua viagem.
           </p>
         </div>
 
