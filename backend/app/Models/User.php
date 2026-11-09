@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Laravel\Sanctum\HasApiTokens;
+
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -14,6 +16,8 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    use HasApiTokens;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -29,4 +33,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function viagens(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Viagem::class, 'usuario_id');
+    }
+
+    public function favoritos(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Favorito::class, 'usuario_id');
+    }
+
 }

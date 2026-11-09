@@ -1,51 +1,162 @@
-"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
-"Indicates what fields are available at the top level of a query operation."
 type Query {
-    "Find a single user by an identifying attribute."
-    user(
-      "Search by primary key."
-      id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
+    me: User
+        @auth(guard: "sanctum")
 
-      "Search by email address."
-      email: String @eq @rules(apply: ["prohibits:id", "required_without:id", "email"])
-    ): User @find
+    minhasViagens: [Viagem!]!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@minhasViagens")
 
-    "List multiple users."
-    users(
-      "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
-      name: String @where(operator: "like")
-    ): [User!]! @paginate(defaultCount: 10)
+    viagem(id: ID!): Viagem
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@viagem")
+
+    destinos: [Destino!]!
+        @guard(with: ["sanctum"])
+        @all(model: "App\\Models\\Destino")
+
+    destino(id: ID! @eq): Destino
+        @guard(with: ["sanctum"])
+        @find(model: "App\\Models\\Destino")
+
+    meusFavoritos: [Favorito!]!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@meusFavoritos")
 }
 
-"Account of a person who uses this application."
+type Mutation {
+    criarDestino(
+        nome: String!
+        estado: String
+        pais: String!
+        codigo_pais: String
+        latitude: Float
+        longitude: Float
+        moeda: String
+        osm_id: String
+        osm_type: String
+    ): Destino!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@criarDestino")
+
+    criarViagem(
+        titulo: String!
+        descricao: String
+        data_inicio: Date!
+        data_fim: Date!
+        status: String!
+    ): Viagem!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@criarViagem")
+
+    atualizarViagem(
+        id: ID!
+        titulo: String
+        descricao: String
+        data_inicio: Date
+        data_fim: Date
+        status: String
+    ): Viagem!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@atualizarViagem")
+
+    excluirViagem(id: ID!): Boolean!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@excluirViagem")
+
+    adicionarFavorito(destino_id: ID!): Favorito!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@adicionarFavorito")
+
+    removerFavorito(destino_id: ID!): Boolean!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@removerFavorito")
+
+    adicionarDestinoViagem(
+        viagem_id: ID!
+        destino_id: ID!
+        ordem: Int!
+        data_chegada: Date
+        data_saida: Date
+        observacoes: String
+    ): ViagemDestino!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@adicionarDestinoViagem")
+
+    atualizarDestinoViagem(
+        id: ID!
+        ordem: Int
+        data_chegada: Date
+        data_saida: Date
+        observacoes: String
+    ): ViagemDestino!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@atualizarDestinoViagem")
+
+    removerDestinoViagem(id: ID!): Boolean!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Api@removerDestinoViagem")
+}
+
 type User {
-    "Unique primary key."
-    id: ID!
-
-    "Non-unique name."
-    name: String!
-
-    "Unique email address."
-    email: String!
-
-    "When the email was verified."
-    email_verified_at: DateTime
-
-    "When the account was created."
-    created_at: DateTime!
-
-    "When the account was last updated."
-    updated_at: DateTime!
-}
-
-type Query {
-    users: [User!]! @all
-}
-
-type User {
     id: ID!
     name: String!
     email: String!
+}
+
+type Viagem {
+    id: ID!
+    usuario_id: ID!
+    titulo: String!
+    descricao: String
+    data_inicio: Date!
+    data_fim: Date!
+    status: String!
+    created_at: DateTime
+    updated_at: DateTime
+
+    destinos: [Destino!]!
+        @belongsToMany
+
+    viagemDestinos: [ViagemDestino!]!
+        @hasMany
+}
+
+type Destino {
+    id: ID!
+    nome: String!
+    estado: String
+    pais: String!
+    codigo_pais: String
+    latitude: Float
+    longitude: Float
+    moeda: String
+    osm_id: String
+    osm_type: String
+    created_at: DateTime
+}
+
+type Favorito {
+    id: ID!
+    destino_id: ID!
+    created_at: DateTime
+
+    destino: Destino!
+        @belongsTo
+}
+
+type ViagemDestino {
+    id: ID!
+    viagem_id: ID!
+    destino_id: ID!
+    ordem: Int!
+    data_chegada: Date
+    data_saida: Date
+    observacoes: String
+
+    destino: Destino!
+        @belongsTo
 }
